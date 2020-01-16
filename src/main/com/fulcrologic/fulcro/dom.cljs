@@ -122,7 +122,7 @@
   (let [on-change  (gobj/getValueByKeys component "state" "data" "onChange")
         next-state #js {}
         inputRef   (gobj/get next-props "inputRef")]
-    (gobj/set next-state "data" (js/Object.assign #js {}
+    (gobj/set next-state "data" (gobj/extend #js {}
                                   next-props
                                   #js {:onChange on-change
                                        :value value}))
@@ -142,9 +142,11 @@
                (this-as this
                  (set! (.-state this)
                    (let [state (clj->js {:data {:ref (gobj/get props "inputRef")}})]
-                     (gobj/set state "data" (js/Object.assign #js {}
+                     (js/console.log "Initial state" state)
+                     (gobj/set state "data" (gobj/extend #js {}
                                               props
                                               #js {:onChange (goog/bind (gobj/get this "onChange") this)}))
+                     (js/console.log "Extended state" state)
                      (gobj/remove (gobj/get state "data") "inputRef")
                      state))
                  (.apply js/React.Component this (js-arguments))))]
@@ -183,7 +185,7 @@
           (if (string? r)
             (apply real-factory props children)
             (let [p #js{}]
-              (js/Object.assign p props)
+              (gobj/extend p props)
               (gobj/set p "inputRef" r)
               (gobj/remove p "ref")
               (apply real-factory p children)))
